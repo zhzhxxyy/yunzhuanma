@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<meta http-equiv="X-UA-Compatible" content="IE=9">
+		<title>视频详情页</title>
+		<link rel="stylesheet" type="text/css" href="<?=Web_Path?>packs/layui/css/layui.css">
+		<link rel="stylesheet" type="text/css" href="<?=Web_Path?>packs/public/css/common.css?v=1.1">
+		<link rel="stylesheet" type="text/css" href="<?=Web_Path?>packs/font/font.css">
+		<script src="<?=Web_Path?>packs/jquery/jquery.min.js"></script>
+		<script src="<?=Web_Path?>packs/layui/layui.js"></script>
+	</head>
+	<body style="padding: 10px">
+        <style type="text/css">a{color: #333;}a:hover{color:#ff5722;}</style>
+        <table class="layui-table">
+            <colgroup>
+                <col width="120">
+                <col>
+            </colgroup>
+            <?php
+                $status = '<font color=#1e9fff>等待转码</font>';
+                if($vod->sid==1) $status = '<font color=green>转码完成</font>';
+                if($vod->sid==2) $status = '<font color=red>转码失败</font>';
+            ?>
+            <tbody>
+                <tr><td align="center">视频名称</td><td><?=$vod->name?></td></tr>
+                <tr><td align="center">转码状态</td><td><?=$status?></td></tr>
+                <tr><td align="center">播放地址</td><td><a href="<?=$playurl?>" target="_blank"><?=$playurl?></a></td></tr>
+				<?php if(Jpg_On == 0){ ?>
+                <tr><td align="center">截图地址</td><td><a href="<?=$pic['jpgurl']?>" target="_blank"><?=$pic['jpgurl']?></a></td></tr>
+                <?php 
+                for($i=1;$i<Jpg_Num;$i++){ 
+                    echo '<tr><td align="center">截图地址'.($i+1).'</td><td><a href="'.$pic['jpgurl_'.$i.''].'" target="_blank">'.$pic['jpgurl_'.$i.''].'</a></td></tr>';
+                }
+				}
+				if(Gif_On == 0){
+                ?>
+                <tr><td align="center">GIF地址</td><td><a href="<?=$gifurl?>" target="_blank"><?=$gifurl?></a></td></tr>
+				<?php } ?>
+                <tr><td align="center">M3U8地址一</td><td><a href="<?=$m3u8url?>" target="_blank"><?=$m3u8url?></a></td></tr>
+                <?php if(Mu_Type == 1){ ?>
+                <tr><td align="center">M3U8地址二</td><td><a href="<?=$m3u8url2?>" target="_blank"><?=$m3u8url2?></a></td></tr>
+                <?php } ?>
+            </tbody>
+        </table>
+		<script src="<?=Web_Path?>packs/public/js/common.js"></script>
+	</body>
+</html>

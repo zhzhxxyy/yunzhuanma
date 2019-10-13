@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset=utf-8>
+	<title>视频转码系统登录</title>
+	<meta name="robots" content="noindex,nofollow">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link type="text/css" rel="stylesheet" href="<?=Web_Path?>packs/public/css/common.css" />
+	<link rel="stylesheet" href="<?=Web_Path?>packs/font/font.css">
+	<link rel="stylesheet" href="<?=Web_Path?>packs/layui/css/layui.css">
+	<link type="text/css" rel="stylesheet" href="<?=Web_Path?>packs/public/css/login.css" />
+	<script src="<?=Web_Path?>packs/layui/layui.js"></script>
+	<script src="<?=Web_Path?>packs/jquery/jquery.min.js"></script>
+</head>
+<body>
+<div class="bg ">
+	<div class="logkuang">
+		<div class="login_title">视频转码系统</div>
+		<form class="layui-form" style="padding-top: 15px;" backurl="<?=$backurl?>" action="<?=site_url('login/save')?>" method="post">
+			<div class="layui-form-item">
+			    <div  class="layui-input-inline"><i class="fa fa-user"></i>
+			        <input type="text" name="adminname" required lay-verify="required" placeholder="请输入登陆账号" autocomplete="off" class="layui-input">
+			    </div>
+			</div>
+			<div class="layui-form-item">
+			    <div  class="layui-input-inline"><i class="fa fa-lock"></i>
+			        <input type="password" name="adminpass" required lay-verify="required" placeholder="请输入登陆密码" autocomplete="off" class="layui-input">
+			    </div>
+			</div>
+			<div class="layui-form-item">
+			    <div class="layui-input-block">
+			        <button class="layui-btn" lay-submit lay-filter="login" >立即登录</button>
+			        <button type="reset" class="layui-btn layui-btn-primary">取消重置</button>
+			    </div>
+			</div>
+		</form>
+	</div>
+</div>
+<script src="<?=Web_Path?>packs/public/js/common.js"></script>
+</body>
+</html>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<meta http-equiv="X-UA-Compatible" content="IE=9">
+		<title>视频转码服务系统</title>
+		<link rel="stylesheet" type="text/css" href="<?=Web_Path?>packs/layui/css/layui.css">
+		<link rel="stylesheet" type="text/css" href="<?=Web_Path?>packs/public/css/common.css?v=1.1">
+		<link rel="stylesheet" type="text/css" href="<?=Web_Path?>packs/font/font.css">
+		<script src="<?=Web_Path?>packs/jquery/jquery.min.js"></script>
+		<script src="<?=Web_Path?>packs/layui/layui.js"></script>
+	</head>
+	<body>
+		<div class="layui-tab-content" style="min-height: 360px;">
+            <form class="layui-form layui-form-so" action="<?=site_url('video')?>" method="post" style="padding-top: 10px">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">日期</label>
+                    <div class="layui-input-inline">
+                        <input style="width:120px;" name="kstime" id="kstime" type="text" value="<?=$kstime?>" class="layui-input" /> 
+                    </div>
+                    <div class="layui-input-inline">-</div>
+                    <div class="layui-input-inline">
+                        <input style="width:120px;" name="jstime" id="jstime" value="<?=$jstime?>" type="text" class="layui-input" />
+                    </div>
+                    <label class="layui-form-label">名称</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="key" value="<?=$key?>" class="layui-input" style="width: 150px">
+                    </div>
+                    <div class="layui-input-inline">
+                        <div class="vocation">
+                            <select  name="cid">
+                               <option value="0">视频分类</option>
+							<?php 
+								foreach ($vlist as $row2) {
+									$sel = $cid == $row2->id ? ' selected' : '';
+									echo '<option value="'.$row2->id.'"'.$sel.'>'.$row2->name.'</option>';
+								}
+							?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-input-inline">
+                        <div class="vocation">
+                            <select  name="sid">
+                               <option value="0">转码状态</option>
+                               <option value="1"<?php if($sid==1) echo ' selected';?>>未完成</option>
+                               <option value="2"<?php if($sid==2) echo ' selected';?>>已完成</option>
+                               <option value="3"<?php if($sid==3) echo ' selected';?>>已失败</option>
+                            </select>
+                        </div>
+                    </div>
+                     <div class="layui-input-inline">
+                        <button class="layui-btn" type="submit">查询</button>
+                    </div>
+                </div>
+            </form>
+            <style type="text/css">
+            	.layui-table td, .layui-table th{text-align: center;}
+				.layui-btn+.layui-btn{margin-left: 2px;}
+				.layui-btn-mini{height: 20px;line-height: 20px;padding: 0 3px;}
+				.layui-table td, .layui-table th{padding: 9px 5px;}
+            </style>
+            <form class="layui-form" action="<?=site_url('video/del')?>" method="post">
+                <table class="layui-table">
+                    <colgroup>
+                        <col width="40">
+                        <col width="100">
+                        <col>
+                        <col width="100">
+                        <col width="80">
+                        <col width="100">
+                        <col width="180">
+                        <col width="160">
+                        <col width="260">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>选</th>
+                            <th>ID</th>
+                            <th>名称</th>
+                            <th>分类</th>
+                            <th>时长</th>
+                            <th>原大小</th>
+                            <th>状态</th>
+                            <th>时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php
+                        if(empty($video)) echo '<tr><td align="center" height="50" colspan="9">没有找到相关记录</td></tr>';
+						$Mu_Path = substr(Mu_Path,0,2) == './' ? substr(Mu_Path,2) : Mu_Path;
+                        foreach ($video as $row) {
+                            $status = '<font class="zt" color=#1e9fff>等待转码</font>';
+                            if($row->sid==1){
+								$status = '<font color=green>转码完成</font>';
+							}
+                            if($row->sid==2) $status = '<font color=red>转码失败</font>';
+
+                            //获取视频地址，兼容其他平台转移过来的数据
+                            if(!empty($row->path) && substr($row->path,-5) == '.m3u8'){
+                                $parr = explode('/', $row->path);
+                                $len = count($parr)-1;
+                                unset($parr[$len]);
+                                $path = implode('/',array_filter($parr));
+                                $rowpath = $path.'/index.m3u8';
+                                $picpath = $path.'/1.jpg';
+								$m3u8url = m3u8_link($vodpath);
+								$picurl = m3u8_link($picpath,'jpg');
+                            }else{
+								if(!empty($row->pic)){
+									$m3u8url = m3u8_link($row->m3u8);
+									$picurl = m3u8_link($row->pic,'jpg');
+								}else{
+									$m3u8url = m3u8_link(m3u8_dir($row->id,$row->addtime,'m3u8',1));
+									$picurl = m3u8_link(m3u8_dir($row->id,$row->addtime,'jpg',1),'jpg');
+								}
+                            }
+                            $cname = '默认分类';
+                            if($row->cid>0){
+                                $rowc = $this->db->query("select name from ".CS_SqlPrefix."class where id=".$row->cid)->row();
+                                if($rowc) $cname = $rowc->name;
+                            }
+							$playurl = 'http://'.Web_Url.links('play/'.$row->id);
+							$tb = Api_On == 1 ? '<a class="layui-btn layui-btn-mini layui-btn-normal" href="javascript:get_tb('.$row->id.');">同步</a>' : '';
+                            echo '
+                            <tr id="row_'.$row->id.'">
+                            <td><input name="id['.$row->id.']" lay-ignore class="xuan" type="checkbox" value="'.$row->id.'" /></td>
+                            <td>'.$row->id.'</td>
+                            <td style="text-align: left;"><a title="'.$row->path.'" class="plink" sid="'.$row->sid.'" href="javascript:layer.msg(\'转码未完成...\');" _href="'.$playurl.'">'.$row->name.'</a></td>
+                            <td>'.$cname.'</td>
+                            <td>'.formattime($row->duration,1).'</td>
+                            <td>'.formatsize($row->size).'</td>
+                            <td id="zm_'.$row->id.'">'.$status.'</td>
+                            <td>'.date('y-m-d H:i:s',$row->addtime).'</td>
+                            <td class="basedb-more">
+								'.$tb.'
+                                <a class="layui-btn layui-btn-mini copy" data-clipboard-text="'.$playurl.'" href="javascript:;">分享</a>
+                                <a class="layui-btn layui-btn-mini layui-btn-danger copy" data-clipboard-text="'.$m3u8url.'" href="javascript:;">m3u8</a>
+                                <a class="layui-btn layui-btn-mini copy" data-clipboard-text="'.$picurl.'" href="javascript:;">图片</a>
+                                <a class="layui-btn layui-btn-mini layui-btn-normal" href="javascript:get_open(\''.site_url('video/show/'.$row->id).'\',\'视频详细信息展示\',\'80%\',\'450px\');">详情</a>
+								<a class="layui-btn layui-btn-mini layui-btn-danger" href="javascript:del_one(\''.site_url('video/del').'\','.$row->id.');">删除</a></td>
+                            </tr> ';
+                        }
+                    ?>
+                    </tbody>
+                </table>
+                <div class="more_func">
+                    <a class="layui-btn layui-btn-primary layui-btn-small" href="javascript:select_all();"><i class="fa fa-check colorl" ></i>全选/反选</a>
+                    <a class="layui-btn layui-btn-primary layui-btn-small" lay-submit lay-filter="del_pl"><i class="fa fa-close " style="color: red" ></i>删除选中</a>
+                </div>
+            </form>
+            <div id="page">
+                <div class="data_nums phide"><?=$page_data?></div>
+                <div class="data_page"><?=$page_list?></div>
+            </div>
+        </div>
+		<script src="<?=Web_Path?>packs/public/js/clipboard.min.js"></script>
+		<script src="<?=Web_Path?>packs/public/js/common.js?v=1.4"></script>
+        <script type="text/javascript">
+        	var laydate,tbval=null;
+            var sid = did = 0;
+            layui.use('laydate', function(){
+                laydate = layui.laydate;
+                getTime('kstime');
+                getTime('jstime');
+            });
+            function getpro(){
+                $.get("<?=links('video/getpro')?>", function(data) {
+                    if(data.info.xu == 1){
+                        var ml = '<?=Mu_Kbps == ''?'原画':Mu_Kbps?>';
+                    }else{
+                        var ml = '<?=Mu_Kbps2?>';
+                    }
+	        		if(data.error==0){
+                        if(data.info.type==0){
+	        				$('#zm_'+data.info.vid).html('<font class="zt" color="#9c27b0">《'+ml+'》转码中 '+data.info.pro+'%</font>');
+                            if(data.info.vid != did){
+                                $('#zm_'+did).html('<font color=green>转码完成</font>');
+                                $('#row_'+did+' td .plink').attr('sid','1');
+                            }
+	        			}else if(data.info.type==1){
+	        				$('#zm_'+data.info.vid).html('<font color=green>《'+ml+'》转码完成</font>');
+	        				$('#zm_'+data.info.nxvid).html('<font class="zt" color="#9c27b0">《'+ml+'》转码准备中</font>');
+	        				$('#row_'+data.info.vid+' td .plink').attr('sid','1');
+	        				getplink();
+	        			}else{
+	        				$('#zm_'+data.info.vid).html('<font color=red>《'+ml+'》转码失败</font>');
+	        				$('#zm_'+data.info.nxvid).html('<font class="zt" color="#9c27b0">《'+ml+'》转码准备中</font>');
+	        			}
+                        did = data.info.vid;
+	        		}else{
+						clearTimeout(tbval);
+	        			$('.plink').attr('sid','1');
+						$('.zt').html('<font color=green>转码完成</font>');
+						getplink();
+					}
+	        	},"json");
+        	}
+        	function getplink(){
+                $('.plink').each(function(){
+                    var sid = $(this).attr('sid');
+                    var link = $(this).attr('_href');
+                    if(sid == '1'){
+                    	$(this).attr('href',link).attr('target','play');
+                    }
+                });
+        	}
+			function get_tb(_id){
+				var index = layer.load(0, {shade: false});
+				$.get('<?=site_url('video/tongbu')?>?id='+_id, function(data) {
+					layer.close(index);
+                    if(data == 'ok'){
+                        layer.msg('恭喜你，同步成功！',{icon:1});
+                    }else{
+                        layer.msg(data,{icon:7});
+                    }
+                },'text');
+			}
+            $(document).ready(function(){
+				if($('.zt').length > 0){
+					getpro();
+            		tbval = setInterval(function(){getpro();},3000);
+				}
+                getplink();
+			});
+			$('.copy').on('click', function () {
+				var clipboard = new Clipboard('.copy');
+				clipboard.on('success', function(e) {
+					layer.msg('复制成功');
+				});
+				clipboard.on('error', function(e) {
+					layer.msg('复制失败', {shift: 6});
+				});
+			})
+        </script>
+        <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?c9aa4e0030abc2b5af397d3ece506b1a";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+	</body>
+</html>

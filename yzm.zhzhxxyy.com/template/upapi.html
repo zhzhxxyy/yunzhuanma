@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频上传</title>
+    <link rel="stylesheet" type="text/css" href="<?=Web_Path?>packs/plupload/css/webuploader.css">
+	<script type="text/javascript" src="<?=Web_Path?>packs/jquery/jquery.min.js"></script>
+<style>
+	#upload_box{width:96%;margin:2% auto;border: 1px dashed #999;box-sizing: border-box;}
+    h5,p{margin: 10px 5px;}
+	.btns{padding: 10px 20px;position: relative;}
+	.bord{border : 1px solid #3bb4f2;border-radius: 5px;}
+	#picker{width:100px;height:48px;}
+	#ctlBtn{position: absolute;top:10px;right:20px;width: 86px;height:42px;cursor: pointer;line-height: 42px;font-size: 14px;border-radius: 3px;background-color: #e6e6e6;color: #444;text-align: center;background-color: #e6e6e6;}
+	#thelist{margin: 10px 20px;padding: 5px;}
+	.item{border-bottom: 1px dashed #999;}
+	.progress-bar{height:10px;margin-bottom:6px;}
+</style>
+</head>
+<body>
+<p style="width:96%;margin:2% auto;">
+	选择上传分类：
+	<select name="cid" id="cid" onchange="get_class()">
+	   <option value="0">默认分类</option>
+	<?php 
+		foreach ($vlist as $row) {
+			$sel = $cid == $row->id ? ' selected' : '';
+			echo '<option value="'.$row->id.'"'.$sel.'>'.$row->name.'</option>';
+		}
+	?>
+	</select>
+</p>
+<div id="upload_box">
+	<div id="uploader" class="wu-example">
+	    <!--用来存放文件信息-->
+	    <div class="btns">
+	        <div id="picker">选择文件</div>
+	        <div id="ctlBtn">开始上传</div>
+	    </div>
+	    <div id="thelist"></div>
+	</div> 
+</div>
+<script type="text/javascript" src="<?=Web_Path?>packs/plupload/js/webuploader.js"></script>
+<script type="text/javascript">
+	function get_class(){
+		var cid = $('#cid').val();
+		location.href='<?=site_url('upapi')?>?cid='+cid;
+	}
+	var upmsg = 0,upname = null,uppic = null,upm3u8 = null,uppurl = null,upsize = null,upsec = null;
+	<?php if(Up_Miao == 1){ ?>
+	WebUploader.Uploader.register({
+	    'before-send-file': function(file){
+	        var uploader = this.owner;
+	        var deferred = WebUploader.Deferred();
+	        uploader.md5File(file.source)
+	            .progress(function(percentage) {
+	                //console.log('Percentage:', percentage);
+	                $('#'+file.id).find('p.state').html('<font color=#0000ff>秒传计算中...'+parseInt(percentage*100)+'%</font>');
+	            })
+	            .then(function(ret) {
+	                file.md5 = ret;
+	                //取得MD5值后，请求服务器查询对应文件是否已存在（秒传）
+	                $.ajax({
+	                   type: 'POST',
+	                   url: '<?=$uploadsave?>',
+	                   data: {'md5':file.md5,'filename':file.name,'filesize':file.size},
+	                   dataType: 'json',
+	                   async:true,//是否使用异步
+	                   success: function(result){
+	                        if(result.msg == 'yes'){
+	                        	upmsg = 2;
+	                        	file.ret = 1;
+	                        } else if(result.msg == 'ok'){
+	                        	upmsg = 1;
+	                        	file.ret = 1;
+		                        upname = result.name;
+		                        uppic = result.pic;
+		                        upm3u8 = result.m3u8;
+		                        uppurl = result.purl;
+		                        upsize = result.size;
+		                        upsec = result.sec;
+	                        }
+	                        deferred.resolve();
+	                   }
+	                });
+	            });
+	        // 返回的是 promise 对象
+	        return deferred.promise();
+	    }
+	    ,'before-send':function(block){
+	        var deferred = WebUploader.Deferred();
+	        if (block.file.ret){//此处跳过秒传的文件
+	            deferred.reject();
+	        }else{
+	            deferred.resolve();
+	        }
+	        return deferred.promise();
+	    }
+	});
+	<?php } ?>
+	var uploader = WebUploader.create({
+		swf: '<?=Web_Path?>packs/plupload/js/Uploader.swf',
+		server: '<?=$uploadsave?>',
+		pick: '#picker',
+		chunked: true,    
+		chunkSize : 6*1024*1024,
+		fileVal: 'video',
+		accept: {
+			title: '视频文件上传',
+			extensions: '<?php echo implode(',',array_filter(explode('|', Up_Ext)));?>',
+			//mimeTypes: 'video/*,audio/*,application/*'
+		},
+		fileNumLimit: 1000,
+		fileSizeLimit: 50000 * 1024 * 1024,
+		fileSingleSizeLimit: 50000 * 1024 * 1024
+	});
+	uploader.on( 'fileQueued', function( file ) {
+		$('#thelist').append( '<div id="' + file.id + '" class="item">' +
+			'<h5 class="info">' + file.name + '</h5>' +
+			'<p class="state" style="color:#f90">等待上传...</p>' +
+		'</div>' );
+		$('#thelist').addClass('bord');
+	});
+	$('#ctlBtn').click(function(event) {
+		uploader.upload();
+		uploader.on( 'uploadProgress', function( file, percentage ) {
+			var $li = $( '#'+file.id ),
+				$percent = $li.find('.progress .progress-bar');
+			if ( !$percent.length ) {
+				$percent = $('<div class="progress progress-striped active">' +
+				  '<div class="progress-bar" role="progressbar" style="width: 0%;background-color:#666;">' +
+				  '</div>' +
+				'</div>').appendTo( $li ).find('.progress-bar');
+			}
+			$li.find('p.state').html('<font color=blue>上传中...</font>');
+			$percent.css( 'width', percentage * 100 + '%' );
+		});
+		uploader.on( 'uploadSuccess', function( file,json) {
+			if(upmsg == 2){
+				$( '#'+file.id ).find('p.state').html('<font color=red>秒传失败：相同标题视频存在</font>');
+			} else if(upmsg == 1){
+				$( '#'+file.id ).find('p.state').html('<font color=#080>秒传成功，已加入转码队列</font>');
+				$.get('<?=Web_Path?>ting.php');
+			} else if(json.msg == 'ok'){
+                upname = json.name;
+                uppic = json.pic;
+                upm3u8 = json.m3u8;
+                uppurl = json.purl;
+                upsize = json.size;
+                upsec = json.sec;
+				var html = '<br>视频名称：'+upname+'<br>视频图片：'+uppic+'<br>播放地址：'+uppurl+'<br>M3U8地址：'+upm3u8+'<br>视频大小：'+upsize+'<br>视频时长：'+upsec;
+				$( '#'+file.id ).find('p.state').html('<font color=#080>上传成功，已加入转码队列'+html+'</font>');
+				$.get('<?=Web_Path?>ting.php');
+			}else{
+				$( '#'+file.id ).find('p.state').html('<font color=red>上传失败：'+json.msg+'</font>');
+			}
+		});
+		uploader.on( 'uploadError', function( file ) {
+			$( '#'+file.id ).find('p.state').html('<font color=red>上传出错</font>');
+		});
+		uploader.on( 'uploadComplete', function( file ) {
+			$( '#'+file.id ).find('.progress').fadeOut();
+		});
+	});
+</script>
+</body>
+</html>

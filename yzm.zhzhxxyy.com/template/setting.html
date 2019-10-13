@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+	    <meta charset="utf-8">
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	    <title>视频转码配置</title>
+	    <link rel="stylesheet" href="<?=Web_Path?>packs/layui/css/layui.css">
+		<link rel="stylesheet" type="text/css" href="<?=Web_Path?>packs/public/css/common.css?v=1.1">
+		<link rel="stylesheet" type="text/css" href="<?=Web_Path?>packs/font/font.css">
+		<script src="<?=Web_Path?>packs/jquery/jquery.min.js"></script>
+		<script src="<?=Web_Path?>packs/layui/layui.js"></script>
+	</head>
+	<body class="setting">
+		<form class="layui-form layui-form-pane setting_form" method="post" action="<?=site_url('setting/save')?>">
+		<div class="layui-tab layui-tab-brief" lay-filter="setting">
+			<ul class="layui-tab-title">
+				<li class="layui-this" lay-id="set1">基本设置</li>
+				<li id="mu" class="" lay-id="set2">转码设置</li>
+				<li id="mu" class="" lay-id="set3">水印设置</li>
+				<li class="" lay-id="set4">截图设置</li>
+				<li class="" lay-id="set5">上传设置</li>
+				<li class="" lay-id="set6">防盗设置</li>
+				<li class="" lay-id="set7">同步设置</li>
+				<li class="" lay-id="set8">后台密码</li>
+			</ul>
+			<div class="layui-tab-content">
+				<!-- 网站基本设置 -->
+				<div class="layui-tab-item<?php if($sid==1) echo ' layui-show';?>">
+					<div class="layui-form-item">
+						<label class="layui-form-label">网站域名</label>
+						<div class="layui-input-inline">
+							<input type="text" name="Web_Url" required  lay-verify="required" placeholder="请输入站点域名" autocomplete="off" class="layui-input" value="<?=Web_Url?>">
+						</div>
+						<div class="layui-form-mid layui-word-aux">站点域名，不带http://</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">转码域名</label>
+						<div class="layui-input-inline">
+							<input type="text" name="Web_Domain" required  lay-verify="required" placeholder="请输入用于转码的站点域名" autocomplete="off" class="layui-input" value="<?=Web_Domain?>">
+						</div>
+						<div class="layui-form-mid layui-word-aux">用于转码的域名，绑定到网站域名一起，不带http://</div>
+					</div>
+					<?php
+					if(substr(Mu_Path,0,2) == './'){
+						$Mu_Path = str_replace("//","/",str_replace("\\","/",FCPATH.substr(Mu_Path,2)));
+					}else{
+						$Mu_Path = str_replace("//","/",str_replace("\\","/",Mu_Path));
+					}
+					?>
+					<div class="layui-form-item">
+						<label class="layui-form-label">M3u8域名</label>
+						<div class="layui-input-inline">
+							<input type="text" name="Web_Play" placeholder="M3u8地址的域名" autocomplete="off" class="layui-input" value="<?=Web_Play?>">
+						</div>
+						<div class="layui-form-mid layui-word-aux">M3u8地址的域名，
+							<?=Web_M3u8On == 1 ? '绑定到网站域名一起，不带http:// ': '域名绑定到：'.$Mu_Path;?></div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">网站路径</label>
+						<div class="layui-input-inline">
+							<input type="text" name="Web_Path" required  lay-verify="required" placeholder="请输入站点路径" autocomplete="off" class="layui-input" value="<?=Web_Path?>">
+						</div>
+						<div class="layui-form-mid layui-word-aux">站点路径，根目录如: / 二级目录如: /m3u8/</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">网站前台</label>
+						<div class="layui-input-inline">
+							<input type="radio" name="Web_On" value="0" title="关闭" <?=Web_On==0?'checked':''?>>
+      						<input type="radio" name="Web_On" value="1" title="开启" <?=Web_On==1?'checked':''?>>
+						</div>
+						<div class="layui-form-mid layui-word-aux">是否开启前台页面</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">m3u8保留</label>
+						<div class="layui-input-inline">
+							<input type="radio" name="Video_M3u8On" value="0" title="保留" <?=Video_SrcOn==0?'checked':''?>>
+      						<input type="radio" name="Video_M3u8On" value="1" title="不保留" <?=Video_SrcOn==1?'checked':''?>>
+						</div>
+						<div class="layui-form-mid layui-word-aux">删除视频是否保留转码后的M3U8文件</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">源文件保留</label>
+						<div class="layui-input-inline">
+							<input type="radio" name="Video_SrcOn" value="0" title="保留" <?=Video_SrcOn==0?'checked':''?>>
+      						<input type="radio" name="Video_SrcOn" value="1" title="不保留" <?=Video_SrcOn==1?'checked':''?>>
+						</div>
+						<div class="layui-form-mid layui-word-aux">转码后是否保留上传源文件</div>
+					</div>
+				</div>
+				<!-- 视频转码设置 -->
+			    <div class="layui-tab-item<?php if($sid==2) echo ' layui-show';?>">
+					<div class="layui-form-item">
+						<label class="layui-form-label">ffmpeg路径</label>
+						<div class="layui-input-inline">
+							<input type="text" name="Mu_Ffpath" placeholder="ffmpeg安装路径" autocomplete="off" class="layui-input" value="<?=Mu_Ffpath?>">
+						</div>
+						<div class="layui-form-mid layui-word-aux">Ffmpeg安装路径，绝对路径，不能留空</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">待转码目录</label>
+						<div class="layui-input-inline">
+							<input type="text" name="Mu_Dir" placeholder="待转码目录" autocomplete="off" class="layui-input" value="<?=Mu_Dir?>">
+						</div>
+						<div class="layui-form-mid layui-word-aux">当转码队列完成后，会自动对该目录进行转码并入库，如：E:/videos/ 可留空</div>
+					</div>
+			    	<div class="layui-form-item">
+						<label class="layui-form-label">加密开关</label>
+						<div class="layui-input-inline">
+							<input type="radio" name="Mu_On" value="0" title="加密" <?=Mu_On==0?'checked':''?>>
+      						<input type="radio" name="Mu_On" value="1" title="不加密" <?=Mu_On==1?'checked':''?>>
+						</div>
+						<div class="layui-form-mid layui-word-aux">是否对转码后的m3u8进行加密</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">秒切开关</label>
+						<div class="layui-input-inline">
+							<input type="radio" name="Mq_On" value="0" title="秒切" <?=Mq_On==0?'checked':''?>>
+      						<input type="radio" name="Mq_On" value="1" title="不秒切" <?=Mq_On==1?'checked':''?>>
+						</div>
+						<div class="layui-form-mid layui-word-aux">是否秒切</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">音频处理</label>
+						<div class="layui-input-inline">
+							<input type="radio" name="Mp_On" value="0" title="复制" <?=Mp_On==0?'checked':''?>>
+      						<input type="radio" name="Mp_On" value="1" title="不复制" <?=Mp_On==1?'checked':''?>>
+						</div>
+						<div class="layui-form-mid layui-word-aux">是否复制音频流，复制则原音质输出，不复制音频流即默认压缩音频，压缩音频有损音质</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">转码方式</label>
+						<div class="layui-input-inline">
+							<select name="Mu_Preset">
+								<option value="ultrafast" <?=Mu_Preset=='ultrafast'?'selected':''?> >急速转码</option>
+								<option value="veryfast" <?=Mu_Preset=='veryfast'?'selected':''?> >速度优先</option>
+								<option value="fast" <?=Mu_Preset=='fast'?'selected':''?> >均衡设置</option>
+								<option value="medium" <?=Mu_Preset=='medium'?'selected':''?> >画质优先</option>
+							</select>
+						</div>
+						<div class="layui-form-mid layui-word-aux">画质优先，转码速度则变慢</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">Ts伪装</label>
+						<div class="layui-input-inline">
+							<input type="text" name="Mu_Tsext" placeholder="Ts伪装" autocomplete="off" class="layui-input" value="<?=Mu_Tsext?>">
+						</div>
+						<div class="layui-form-mid layui-word-aux">Ts伪装成其他文件，如：jpg，该功能只在开启m3u8防盗后有效</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">跳过片头</label>
+						<div class="layui-input-inline">
+							<input type="text" name="Mu_PtTime" placeholder="跳过片头秒数" autocomplete="off" class="layui-input" value="<?=Mu_PtTime?>">
+						</div>
+						<div class="layui-form-mid layui-word-aux">是否跳过片头，时间为秒数，如：60</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">双码率开关</label>
+						<div class="layui-input-inline">
+							<input type="radio" name="Mu_Type" value="0" lay-filter="ml" title="关闭" <?=Mu_Type==0?'checked':''?>>
+      						<input type="radio" name="Mu_Type" value="1" lay-filter="ml" title="开启" <?=Mu_Type==1?'checked':''?>>
+						</div>
+						<div class="layui-form-mid layui-word-aux">是否开启多码率转码</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">码率一</label>
+						<div class="layui-input-inline" style="min-width:120px;">
+							<select name="Mu_Kbps">
+								<option value="" <?=Mu_Kbps==''?'selected':''?> >原画</option>
+								<option value="160k" <?=Mu_Kbps=='160k'?'selected':''?> >160k</option>
+								<option value="240k" <?=Mu_Kbps=='240k'?'selected':''?> >240k</option>
+								<option value="360k" <?=Mu_Kbps=='360k'?'selected':''?> >360k</option>
+								<option value="500k" <?=Mu_Kbps=='500k'?'selected':''?> >500k</option>
+								<option value="720k" <?=Mu_Kbps=='720k'?'selected':''?> >720k</option>
+								<option value="1000k" <?=Mu_Kbps=='1000k'?'selected':''?> >1000k</option>
+							</select>
+						</div>
+						<label class="layui-form-label">尺寸一</label>
+						<div class="layui-input-inline" style="min-width:120px;">
+							<input type="text" name="Mu_Size" placeholder="请输如转码后的尺寸" autocomplete="off" class="layui-input" value="<?=Mu_Size?>">
+						</div>
+						<div class="layui-form-mid layui-word-aux">用于约束转码后的视频尺寸，如320x180，留空则是原画</div>
+					</div>
+					<div class="layui-form-item" id="ml"<?php if(Mu_Type == 0) echo ' style="display: none;"';?>>
+						<label class="layui-form-label">码率二</label>
+						<div class="layui-input-inline" style="min-width:120px;">
+							<select name="Mu_Kbps2">
+								<option value="" <?=Mu_Kbps2==''?'selected':''?> >原画</option>
+								<option value="160k" <?=Mu_Kbps2=='160k'?'selected':''?> >160k</option>
+								<option value="240k" <?=Mu_Kbps2=='240k'?'selected':''?> >240k</option>
+								<option value="360k" <?=Mu_Kbps2=='360k'?'selected':''?> >360k</option>
+								<option value="500k" <?=Mu_Kbps2=='500k'?'selected':''?> >500k</option>
+								<option value="720k" <?=Mu_Kbps2=='720k'?'selected':''?> >720k</option>
+								<option value="1000k" <?=Mu_Kbps2=='1000k'?'selected':''?> >1000k</option>
+							</select>
+						</div>
+						<label class="layui-form-label">尺寸二</label>
+						<div class="layui-input-inline" style="min-width:120px;">
+							<input type="text" name="Mu_Size2" placeholder="请输如转码后的尺寸" autocomplete="off" class="layui-input" value="<?=Mu_Size2?>">
+						</div>
+						<div class="layui-form-mid layui-word-aux">用于约束转码后的视频尺寸，如320x180，留空则是原画</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">TS时长</label>
+						<div class="layui-input-inline">
+							<input type="text" name="Mu_Time" placeholder="单个TS的时长" autocomplete="off" class="layui-input" value="<?=Mu_Time?>">
+						</div>
+						<div class="layui-form-mid layui-word-aux">单个TS的时长，建议设置为10左右</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">保存路径</label>
+						<div class="layui-input-inline">
+							<input type="text" name="Mu_Path" placeholder="转码后m3u8保存的路径" autocomplete="off" class="layui-input" value="<?=Mu_Path?>">
+						</div>
+						<div class="layui-form-mid layui-word-aux">转码后m3u8保存的路径，绝对路径，不能留空</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">M3U8后缀</label>
+						<div class="layui-input-inline">
+							<input type="text" name="Mu_M3u8_Name" placeholder="转码后M3U8保存的文件名字" autocomplete="off" class="layui-input" value="<?=defined('Mu_M3u8_Name') ? Mu_M3u8_Name : '[年]/[月]/[日]/[md5]/m3u8.m3u8'?>">
+						</div>
+						<div class="layui-form-mid layui-word-aux">M3U8保存的文件名字，如：[年]/[月]/[日]/[md5]/m3u8.m3u8</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">截图后缀</label>
+						<div class="layui-input-inline">
+							<input type="text" name="Mu_Pic_Name" placeholder="转码后截图保存名字" autocomplete="off" class="layui-input" value="<?=defined('Mu_Pic_Name') ? Mu_Pic_Name : '[年]/[月]/[日]/[md5]/vod.jpg'?>">
+						</div>
+						<div class="layui-form-mid layui-word-aux">截图保存的文件名字，如：[年]/[月]/[日]/[md5]/vod.jpg，多张序号可以用[xu]来代替序号</div>
+					</div>
+					<div class="layui-form-item" style="display: none;">
+						<label class="layui-form-label">转码密钥</label>
+						<div class="layui-input-inline">
+							<input type="text" name="Mu_Key" placeholder="" autocomplete="off" class="layui-input" value="<?=Mu_Key?>">
+						</div>
+						<div class="layui-form-mid layui-word-aux">不建议使用默认值，建议8位的数字字母字符串</div>
+					</div>
+				</div>
+				<!-- 水印设置 -->
+			    <div class="layui-tab-item<?php if($sid==3) echo ' layui-show';?>">
+					<div class="layui-form-item">
+						<label class="layui-form-label" style="width: 120px;">左上水印间距</label>
+						<div class="layui-input-inline">
+							<input style="width: 220px;display: inline-block;" type="text" name="Wm_Lt" placeholder="" autocomplete="off" class="layui-input" value="<?=Wm_Lt?>">
+							<input type="checkbox" value="1" name="Wm_On" lay-skin="primary" title="启用"<?=Wm_On==1?'checked=""':''?>>
+						</div>
+						<div class="layui-form-mid layui-word-aux">图片位置：<?=FCPATH.'packs/logo.png'?>，水印距离，如10:10</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label" style="width: 120px;">右上水印间距</label>
+						<div class="layui-input-inline">
+							<input style="width: 220px;display: inline-block;" type="text" name="Wm_Lt2" placeholder="" autocomplete="off" class="layui-input" value="<?=Wm_Lt2?>">
+							<input type="checkbox" value="1" name="Wm_On2" lay-skin="primary" title="启用"<?=Wm_On2==1?'checked=""':''?>>
+						</div>
+						<div class="layui-form-mid layui-word-aux">图片位置：<?=FCPATH.'packs/logo2.png'?>，水印距离，如10:10</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label" style="width: 120px;">左下水印间距</label>
+						<div class="layui-input-inline">
+							<input style="width: 220px;display: inline-block;" type="text" name="Wm_Lt3" placeholder="" autocomplete="off" class="layui-input" value="<?=Wm_Lt3?>">
+							<input type="checkbox" value="1" name="Wm_On3" lay-skin="primary" title="启用"<?=Wm_On3==1?'checked=""':''?>>
+						</div>
+						<div class="layui-form-mid layui-word-aux">图片位置：<?=FCPATH.'packs/logo3.png'?>，水印距离，如10:10</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label" style="width: 120px;">右下水印间距</label>
+						<div class="layui-input-inline">
+							<input style="width: 220px;display: inline-block;" type="text" name="Wm_Lt4" placeholder="" autocomplete="off" class="layui-input" value="<?=Wm_Lt4?>">
+							<input type="checkbox" value="1" name="Wm_On4" lay-skin="primary" title="启用"<?=Wm_On4==1?'checked=""':''?>>
+						</div>
+						<div class="layui-form-mid layui-word-aux">图片位置：<?=FCPATH.'packs/logo4.png'?>，水印距离，如10:10</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label" style="width: 120px;">字幕开关</label>
+						<div class="layui-input-inline">
+							<input type="radio" name="Wm_Zm" value="0" lay-filter="watermark" title="关闭" <?=Wm_Zm==0?'checked':''?>>
+      						<input type="radio" name="Wm_Zm" value="1" lay-filter="watermark" title="开启" <?=Wm_Zm==1?'checked':''?>>
+						</div>
+						<div class="layui-form-mid layui-word-aux">字幕开关</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label" style="width: 120px;">字幕内容</label>
+						<div class="layui-input-inline" style="width: 500px;">
+							<textarea type="text" name="Wm_ZmNei" placeholder="字幕内容" class="layui-textarea"><?=$zimu?></textarea>
+						</div>
+						<div class="layui-form-mid layui-word-aux">字幕内容</div>
+					</div>
+			    </div>
+			    <!-- 截图动图设置 -->
+			    <div class="layui-tab-item<?php if($sid==4) echo ' layui-show';?>">
+					<div class="layui-form-item">
+						<label class="layui-form-label">截图开关</label>
+						<div class="layui-input-inline">
+      						<input type="radio" name="Jpg_On" value="1" title="关闭" <?=Jpg_On==1?'checked':''?>>
+							<input type="radio" name="Jpg_On" value="0" title="开启" <?=Jpg_On==0?'checked':''?>>
+						</div>
+						<div class="layui-form-mid layui-word-aux">视频生成jpg图开关设置</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">截图张数</label>
+						<div class="layui-input-inline">
+							<input type="text" name="Jpg_Num" placeholder="" autocomplete="off" class="layui-input" value="<?=Jpg_Num?>">
+						</div>
+						<div class="layui-form-mid layui-word-aux">总共截取图片张数，默认1张</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">间隔时间</label>
+						<div class="layui-input-inline">
+							<input type="text" name="Jpg_Time" placeholder="" autocomplete="off" class="layui-input" value="<?=Jpg_Time?>">
+						</div>
+						<div class="layui-form-mid layui-word-aux">截图间隔时间，秒数，几秒截取一张</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">截图尺寸</label>
+						<div class="layui-input-inline">
+							<input type="text" name="Jpg_Size" placeholder="截取图片的尺寸" autocomplete="off" class="layui-input" value="<?=Jpg_Size?>">
+						</div>
+						<div class="layui-form-mid layui-word-aux">截取图片的宽高，如320x180，留空表示跟视频保持一致</div>
+					</div>
+			    	<hr class="layui-bg-orange">
+			    	<div class="layui-form-item">
+						<label class="layui-form-label">动图开关</label>
+						<div class="layui-input-inline">
+      						<input type="radio" name="Gif_On" value="1" title="关闭" <?=Gif_On==1?'checked':''?>>
+							<input type="radio" name="Gif_On" value="0" title="开启" <?=Gif_On==0?'checked':''?>>
+						</div>
+						<div class="layui-form-mid layui-word-aux">视频生成gif图片开关设置</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">开始位置</label>
+						<div class="layui-input-inline">
+							<input type="text" name="Gif_Time" placeholder="" autocomplete="off" class="layui-input" value="<?=Gif_Time?>">
+						</div>
+						<div class="layui-form-mid layui-word-aux">GIF开始时视频的秒数</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">动图时长</label>
+						<div class="layui-input-inline">
+							<input type="text" name="Gif_Len" placeholder="" autocomplete="off" class="layui-input" value="<?=Gif_Len?>">
+						</div>
+						<div class="layui-form-mid layui-word-aux">GIF图片的时长，建议2-4秒</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">动图尺寸</label>
+						<div class="layui-input-inline">
+							<input type="text" name="Gif_Size" placeholder="GIF图片的尺寸" autocomplete="off" class="layui-input" value="<?=Gif_Size?>">
+						</div>
+						<div class="layui-form-mid layui-word-aux">GIF图片的宽高，如320x180，留空表示跟视频保持一致</div>
+					</div>
+			    </div>
+				<!-- 上传设置 -->
+			    <div class="layui-tab-item<?php if($sid==5) echo ' layui-show';?>">
+					<div class="layui-form-item">
+						<label class="layui-form-label">上传路径</label>
+						<div class="layui-input-inline">
+							<input type="text" name="Video_Path" placeholder="请输入视频上传路径" autocomplete="off" class="layui-input" value="<?=Video_Path?>">
+						</div>
+						<div class="layui-form-mid layui-word-aux">视频上传存储路径，如：F:/video/，网站目录请用./开头</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">支持格式</label>
+						<div class="layui-input-inline">
+							<input type="text" name="Up_Ext" placeholder="请输入上传支持的格式" autocomplete="off" class="layui-input" value="<?=Up_Ext?>">
+						</div>
+						<div class="layui-form-mid layui-word-aux">上传支持的格式，如：mp4|mkv|flv</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">秒传开关</label>
+						<div class="layui-input-inline">
+							<input type="radio" name="Up_Miao" value="0" title="关闭" <?=Up_Miao==0?'checked':''?>>
+      						<input type="radio" name="Up_Miao" value="1" title="开启" <?=Up_Miao==1?'checked':''?>>
+						</div>
+						<div class="layui-form-mid layui-word-aux">注意：开启后上传之前会进行文件MD5验证，大文件不建议开启</div>
+					</div>
+					<?php $Up_Api = !defined('Up_Api') ? 0 : Up_Api;?>
+					<div class="layui-form-item">
+						<label class="layui-form-label">外部上传</label>
+						<div class="layui-input-inline">
+							<input type="radio" name="Up_Api" value="0" title="关闭" <?=$Up_Api==0?'checked':''?>>
+      						<input type="radio" name="Up_Api" value="1" title="开启" <?=$Up_Api==1?'checked':''?>>
+						</div>
+						<div class="layui-form-mid layui-word-aux">注意：开启后可以通过地址 http://<?=$_SERVER['HTTP_HOST'].links('upapi')?> 进行上传</div>
+					</div>
+			    </div>
+				<!-- 防盗设置 -->
+			    <div class="layui-tab-item<?php if($sid==6) echo ' layui-show';?>">
+					<div class="layui-form-item">
+						<label class="layui-form-label">防盗开关</label>
+						<div class="layui-input-inline">
+      						<input type="radio" name="Web_CrossOn" value="0" title="关闭" <?=Web_CrossOn==0?'checked':''?>>
+							<input type="radio" name="Web_CrossOn" value="1" title="开启" <?=Web_CrossOn==1?'checked':''?>>
+						</div>
+						<div class="layui-form-mid layui-word-aux">域名防盗链是否开启</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">直接访问</label>
+						<div class="layui-input-inline">
+      						<input type="radio" name="Web_Cross" value="0" title="关闭" <?=Web_Cross==0?'checked':''?>>
+							<input type="radio" name="Web_Cross" value="1" title="开启" <?=Web_Cross==1?'checked':''?>>
+						</div>
+						<div class="layui-form-mid layui-word-aux">注意：关闭后不能直接打开播放地址，只能用IF框架进行播放</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">M3U8防盗</label>
+						<div class="layui-input-inline">
+      						<input type="radio" name="Web_M3u8On" value="0" title="关闭" <?=Web_M3u8On==0?'checked':''?>>
+							<input type="radio" name="Web_M3u8On" value="1" title="开启" <?=Web_M3u8On==1?'checked':''?>>
+						</div>
+						<div class="layui-form-mid layui-word-aux">注意：开启后m3u8地址会变更，不能直接访问M3U8地址</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">放行域名</label>
+						<div class="layui-input-inline" style="width: 500px;">
+							<textarea type="text" name="Web_CrossDomain" placeholder="放行域名" class="layui-textarea"><?=Web_CrossDomain?></textarea>
+						</div>
+						<div class="layui-form-mid layui-word-aux">留空为不限制，多个域名用竖线"|"隔开，如：www.123.tv|www.ctcms.cn</div>
+					</div>
+			    </div>
+				<!-- 同步设置 -->
+			    <div class="layui-tab-item<?php if($sid==7) echo ' layui-show';?>">
+					<div class="layui-form-item">
+						<label class="layui-form-label">同步开关</label>
+						<div class="layui-input-inline">
+							<input type="radio" name="Api_On" value="0" title="关闭" <?=Api_On==0?'checked':''?>>
+      						<input type="radio" name="Api_On" value="1" title="开启" <?=Api_On==1?'checked':''?>>
+						</div>
+						<div class="layui-form-mid layui-word-aux">API同步开关</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">同步地址</label>
+						<div class="layui-input-inline">
+							<input type="text" name="Api_Url" placeholder="请输入同步地址" autocomplete="off" class="layui-input" value="<?=Api_Url?>">
+						</div>
+						<div class="layui-form-mid layui-word-aux">API同步地址，如：http://demo.ctcms.cn/yunapi</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">同步秘钥</label>
+						<div class="layui-input-inline">
+							<input type="text" name="Api_Key" placeholder="请输入同步秘钥" autocomplete="off" class="layui-input" value="<?=Api_Key?>">
+						</div>
+						<div class="layui-form-mid layui-word-aux">API同步秘钥，如：yunzhuanma520</div>
+					</div>
+			    </div>
+				<!-- 后台登录密码设置 -->
+			    <div class="layui-tab-item<?php if($sid==8) echo ' layui-show';?>">
+					<div class="layui-form-item">
+						<label class="layui-form-label">登录账号</label>
+						<div class="layui-input-inline">
+							<input type="text" name="Admin_Name" placeholder="请输入登录账号" autocomplete="off" class="layui-input" value="<?=Admin_Name?>">
+						</div>
+						<div class="layui-form-mid layui-word-aux">登录账号，如：admin</div>
+					</div>
+
+					<div class="layui-form-item">
+						<label class="layui-form-label">登录密码</label>
+						<div class="layui-input-inline">
+							<input type="text" name="Admin_Code" placeholder="请输入登录密码" autocomplete="off" class="layui-input" value="<?=Admin_Code?>">
+						</div>
+						<div class="layui-form-mid layui-word-aux">登录密码，建议6位以上</div>
+					</div>
+			    </div>
+
+			    <div class="layui-form-item">
+					<div class="layui-input-block" style="padding-top: 10px">
+						<button class="layui-btn layui-btn2" lay-filter="setting" lay-submit>立即提交</button>
+						<button type="reset" class="layui-btn layui-btn-primary">取消重置</button>
+					</div>
+				</div>
+			</div>
+		</div>    
+		</form>
+		<script src="<?=Web_Path?>packs/public/js/common.js"></script>
+		<script type="text/javascript">
+			layui.use(['form','element'], function(){
+				var form = layui.form;
+				var element = layui.element;
+				element.tabChange('setting', 'set<?=$sid?>');
+				form.on('radio(watermark)', function(data){
+					var rad = data.value;
+					$('.watermark').hide();
+					$('.watermark'+rad).show();
+				});
+				form.on('radio(ml)', function(data){
+					var rad = data.value;
+					if(rad == 0){
+						$('#ml').hide();
+					}else{
+						$('#ml').show();
+					}
+				});
+			});
+		</script>
+	</body>
+</html>

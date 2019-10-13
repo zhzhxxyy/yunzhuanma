@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <title>云转码视频管理系统</title>
+    <link rel="stylesheet" href="<?=Web_Path?>packs/font/font.css">
+    <link rel="stylesheet" href="<?=Web_Path?>packs/layui/css/layui.css">
+    <link rel="stylesheet" href="<?=Web_Path?>packs/public/css/home.css">
+	<script src="<?=Web_Path?>packs/jquery/jquery.min.js"></script>
+	<script src="<?=Web_Path?>packs/layui/layui.js"></script>
+</head>
+<body>
+<div class="layui-layout">
+    <div class="layui-header">
+        <div class="page-wb page-header">
+            <div class="logo page-left"><a href="<?=Web_Path?>">云转码</a></div>
+            <ul class="layui-nav page-left">
+                <li class="layui-nav-item "><a href="<?=Web_Path?>">全部视频</a></li>
+				<?php 
+				foreach ($vlist as $row) {
+					$cls = $row->id == $cid ? ' layui-this' : '';
+					echo '<li class="layui-nav-item'.$cls.'"><a href="'.links('home/index/'.$row->id).'">'.$row->name.'</a></li>';
+				}
+				?>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="page-wb">
+    <ul class="fly-case-list layui-main">
+	<?php
+	if(empty($video)) echo '<div style="width: 100%;font-size: 16px;text-align: center;">没有找到记录</div>';
+	$Mu_Path = substr(Mu_Path,0,2) == './' ? substr(Mu_Path,2) : Mu_Path;
+	foreach ($video as $row) {
+		$playurl = 'http://'.Web_Url.links('play/'.$row->id);
+		$status = '等待转码';
+		if($row->sid==1){
+			$status = '转码完成';
+		}
+		if($row->sid==2) $status = '转码失败';
+		$rowz = $this->db->query("select addtime from ".CS_SqlPrefix."queue where vid=".$row->id)->row();
+		if($rowz && $rowz->addtime > 0) $status = '转码中';
+		//获取视频地址，兼容其他平台转移过来的数据
+		if(!empty($row->path) && substr($row->path,-5) == '.m3u8'){
+			$parr = explode('/', $row->path);
+			$len = count($parr)-1;
+			unset($parr[$len]);
+			$path = implode('/',array_filter($parr));
+			$rowpath = $path.'/index.m3u8';
+			$picpath = $path.'/1.jpg';
+			$m3u8url = m3u8_link($vodpath);
+			$picurl = m3u8_link($picpath,'jpg');
+		}else{
+			if(!empty($row->pic)){
+				$m3u8url = m3u8_link($row->m3u8);
+				$picurl = m3u8_link($row->pic,'jpg');
+			}else{
+				$m3u8url = m3u8_link(m3u8_dir($row->id,$row->addtime,'m3u8',1));
+				$picurl = m3u8_link(m3u8_dir($row->id,$row->addtime,'jpg',1),'jpg');
+			}
+		}
+		echo '
+		<li>
+        	<a class="fly-case-img" href="'.$playurl.'" target="_blank"><img lay-src="'.$picurl.'"><i class="fa fa-play-circle" aria-hidden="true"></i><span class="zt">'.$status.'</span><span class="sc">'.formattime($row->duration,1).'</span><span class="dx">'.formatsize($row->size).'</span></a>
+            <h2 class="layui-elip"><a href="'.$playurl.'" target="_blank">'.$row->name.'</a></h2>
+            <div class="fly-case-info">
+                <p class="layui-elip"><span style="color:#666;">'.date('Y-m-d H:i:s',$row->addtime).'</span><span class="cy_cmt_count"><a class="layui-btn layui-btn-mini copy" data-clipboard-text="'.$m3u8url.'" href="javascript:;">m3u8地址</a></span></p>
+            </div>
+        </li>';
+	}
+	?>
+    </ul>
+<?php
+if($pagejs > 1){
+    echo '<div class="layui-box layui-laypage layui-laypage-default"><div><span class="rows">共 '.$pagenum.' 条记录 当前 '.$page.' / '.$pagejs.'页</span>';
+		if($page >1) echo '<a href="'.links('home/index/'.$cid.'/1').'">首页</a><a href="'.links('home/index/'.$cid.'/'.($page-1)).'">上一页</a>';
+		for ($i = $pagestart; $i <= $pageend; $i++) {
+			if($i == $page){
+				echo '<a class="current">'.$i.'</a>';
+			}else{
+				echo '<a href="'.links('home/index/'.$cid.'/'.$i).'">'.$i.'</a></li>';
+			}
+		}
+		if($page < $pagejs) echo '<a href="'.links('home/index/'.$cid.'/'.($page+1)).'">下一页</a><a href="'.links('home/index/'.$cid.'/'.$pagejs).'">末页</a>';
+	echo '</div></div>';
+}
+?>
+</div>
+<div class="layui-footer layui-mt30" id="footer">
+	<div class="page-wb layui-clear">
+    	<div class="page-left layui-mt5">
+        	<p class="layui-mt10">本站资源均来自互联网或会员发布，如果侵犯了您的权益请与我们联系，我们将在24小时内处理！</p>
+        </div>
+    </div>
+</div>
+<script src="<?=Web_Path?>packs/public/js/clipboard.min.js"></script>
+<script src="<?=Web_Path?>packs/public/js/common.js?v=1.4"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('.copy').on('click', function () {
+		var clipboard = new Clipboard('.copy');
+		clipboard.on('success', function(e) {
+			layer.msg('复制成功');
+		});
+		clipboard.on('error', function(e) {
+			layer.msg('复制失败', {shift: 6});
+		});
+	});
+});
+layui.use('flow', function(){
+  var flow = layui.flow;
+  //图片懒加载
+  flow.lazyimg();
+});
+</script>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?c9aa4e0030abc2b5af397d3ece506b1a";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? "https://" : "http://");document.write(unescape("%3Cspan style='display:none;' id='cnzz_stat_icon_1277678147'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s96.cnzz.com/z_stat.php%3Fid%3D1277678147%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));</script>
+</body>
+</html>

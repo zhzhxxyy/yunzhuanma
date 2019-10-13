@@ -1,0 +1,68 @@
+body{background:#F2F2F2;font-family: 'Microsoft Yahei','\5FAE\8F6F\96C5\9ED1';}
+.layui-header{position:fixed;top:0;width:100%;left:0;background-color:#393D49;}
+.page-wb{width:1200px;margin:0 auto;}
+.page-wb:after{content:'';display:block;clear:both;}
+.page-left{float:left;}
+.page-right{float:right;}
+.login,.reg{padding:0 0 0 20px !important;}
+.layui-mt5{margin-top:5px;}
+.layui-mt10{margin-top:10px;}
+.layui-mt20{margin-top:20px;}
+.layui-mt30{margin-top:30px;}
+.layui-mb10{margin-bottom:10px;}
+.layui-mb20{margin-bottom:20px;}
+.layui-mr10{margin-right:10px;}
+.layui-mr20{margin-right:20px;}
+.layui-ml10{margin-left:10px;}
+.layui-ml20{margin-left:20px;}
+.hide{display:none;}
+.layui-layout{margin-top:60px;}
+.logo{width:160px;background:url(../images/logo.png) no-repeat left center;height:60px;text-indent:-9999px;}
+.logo a{display:block;height:100%;width:100%;}
+.top-user{padding: 0!important;}
+.top-user dd a {padding: 0 15px!important;}
+.top-user .layui-nav-child a i { position: relative;top: 2px;margin-right: 10px;font-size: 20px;}
+.top-user .iz-user{font-size:24px;height:60px;overflow:hidden;}
+.top-user .layui-nav-child {left: auto;right: 0;width: 120px;min-width: 0;}
+.top-user .layui-nav-bar{display: none !important;}
+.top-avatar img {width: 35px;height: 35px;margin-right: 10px;;border-radius: 100%;background: #fff;}
+.layui-layer-content {overflow: visible!important;}
+
+.layui-hot {margin-top: 20px}
+.layui-hot .layui-tab-content {padding: 0;}
+.layui-hot .layui-tab-title{text-align:center;}
+.layui-hot>.layui-tab-title .layui-this{color:#234;font-size:16px;}
+.layui-hot>.layui-tab-title .layui-this:after{border:0;border-bottom:3px solid #5FB878;}
+
+.fly-case-list{margin-top:15px;font-size:0;top: 20px;}
+.fly-case-list li,.layer-ext-ul li{display: inline-block;vertical-align: middle; *display: inline; *zoom:1; font-size: 14px; background-color:#fff;}
+.fly-case-list{width:1216px;min-height:500px;margin:15px -8px 0 -8px;}
+.fly-case-list li{width:268px;margin:0 8px 15px 8px;padding:10px;}
+.fly-case-list li:hover{box-shadow: 1px 1px 5px rgba(0,0,0,.1);}
+.fly-case-img{position:relative;display:block;height: 150px;width: 100%;overflow: hidden;background: url(../images/load.jpg) no-repeat;}
+.fly-case-img img{width:100%;background:rgba(0,0,0,.2);opacity:1;}
+.fly-case-img:hover img{opacity:0.8;}
+.fly-case-img .zt{position: absolute;top: 5px; left: 6px;color: #fff;background: rgba(51, 51, 51, 0.32);padding: 1px 5px;}
+.fly-case-img .sc{position: absolute;bottom: 10px; right: 6px;color: #fff;}
+.fly-case-img .dx{position: absolute;bottom: 10px; left: 6px;color: #fff;}
+.fly-case-img i{position:absolute;width:100px;height:100px;-webkit-border-radius:50%;-moz-border-radius:50%;-o-border-radius:50%;-ms-border-radius:50%;border-radius:50%;background:rgba(0,0,0,.2);top:40px;left:50%;margin-left:-50px;color:#fff;font-size:45px;text-align:center;line-height:100px;opacity:0;-webkit-transition:all .3s;-moz-transition:all .3s;-ms-transition:all .3s;-o-transition:all .3s;transition:all .3s;}
+.fly-case-img:hover i{opacity:1;width:48px;height:48px;line-height:48px;margin-left:-24px;top:66px;}
+.fly-case-list li h2{padding: 10px 0 5px;line-height:22px;font-size:18px;text-align:center;height:24px;}
+.fly-case-list li h2 a:hover{color:#FF5722;}
+.fly-case-desc{height:40px; line-height: 20px;font-size:12px; color:#666;overflow:hidden;}
+.fly-case-info{position:relative;margin:10px 0 0;padding-top:10px;border-top: 1px dotted #eee;}
+.fly-case-info p{height:24px; line-height:24px;}
+.fly-case-info .layui-elip{color:#666;}
+.fly-case-info .layui-elip span{float:right;}
+
+/* footer */
+.layui-footer{background-color: #393D49;color:rgba(255,255,255,.7);font-size:12px;line-height:26px;padding:20px 0 20px;}
+
+.layui-laypage{text-align:center;width:100%;margin: 30px 0 0 0;}
+.layui-laypage a,.layui-laypage span{height:37px;line-height:37px;font-size:14px;}
+.layui-laypage a.current{background:#5FB878;color:#fff;}
+.page-content{width:850px;float:left;}
+.page-show{width:820px;padding:15px;background:#fff;}
+.page-more{width:336px;float:right;}
+
+.cy_cmt_count{float:none !important;margin-left:5px;}

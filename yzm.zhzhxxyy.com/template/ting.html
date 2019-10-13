@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	</head>
+	<body>
+		<div class="change"></div>
+		<script type="text/javascript" src="<?=Web_Path?>packs/jquery/jquery.min.js"></script>
+		<script type="text/javascript">
+			var settime = 5000;
+			var nxid = 0;
+			function getpro(){
+        		$.get('<?=site_url('video/getpro')?>', function(data) {
+	        		if(data.error==0){
+	        			if(data.info.type==0){
+	        				$('.change').html('<font color=#9c27b0>《'+data.info.name+'》转码中 '+data.info.pro+'%</font>');
+	        			}else if(data.info.type==1){
+	        				$('.change').html('<font color=green>上一个转码完成，《'+data.info.name+'》转码准备中</font>');
+	        				if(data.info.nxid>0 && data.info.nxid!=nxid){
+	        					nxid = data.info.nxid;
+	        					$.getJSON("http://<?=Web_Domain?>/index.php/video/transcode?id="+data.info.nxid);
+	        				}else{
+	        					$('.change').html('转码全部完成，暂无队列');
+	        				}
+	        			}else{
+	        				$('.change').html('<font color=red>上一个转码失败，《'+data.info.name+'》转码准备中</font>');
+	        				if(data.info.nxid>0 && data.info.nxid!=nxid){
+	        					nxid = data.info.nxid;
+								$.getJSON("http://<?=Web_Domain?>/index.php/video/transcode?id="+data.info.nxid);
+	        				}
+	        			}
+	        		}else{
+	        			$('.change').html(data.info);
+	        		}
+	        	},"json");
+        	}
+        	getpro();
+        	setInterval(function(){
+				getpro();
+			},settime);
+		</script>
+	</body>
+</html>

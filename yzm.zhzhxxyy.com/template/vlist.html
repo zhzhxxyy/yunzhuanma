@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<meta http-equiv="X-UA-Compatible" content="IE=9">
+		<title>视频转码服务系统</title>
+		<link rel="stylesheet" type="text/css" href="<?=Web_Path?>packs/layui/css/layui.css">
+		<link rel="stylesheet" type="text/css" href="<?=Web_Path?>packs/public/css/common.css?v=1.1">
+		<link rel="stylesheet" type="text/css" href="<?=Web_Path?>packs/font/font.css">
+		<script src="<?=Web_Path?>packs/jquery/jquery.min.js"></script>
+		<script src="<?=Web_Path?>packs/layui/layui.js"></script>
+	</head>
+	<body>
+		<div class="layui-tab-content" style="min-height: 360px;">
+            <form class="layui-form layui-form-so" action="<?=site_url('vlist')?>" method="post" style="padding-top: 10px">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">名称</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="key" value="<?=$key?>" class="layui-input" style="width: 150px">
+                    </div>
+                     <div class="layui-input-inline">
+                        <button class="layui-btn" type="submit">查询</button>
+                    </div>
+                     <div class="layui-input-inline">
+                        <button class="layui-btn layui-btn-normal" onclick="get_open('<?=site_url('vlist/edit')?>','新增分类','70%','280px');" type="button">新增分类</button>
+                    </div>
+                </div>
+            </form>
+            <style type="text/css">
+            	th,tr,td{text-align: center;}
+				.layui-btn+.layui-btn{margin-left: 2px;}
+				.layui-btn-mini{height: 20px;line-height: 20px;padding: 0 3px;}
+				.layui-table td, .layui-table th{padding: 9px 5px;}
+            </style>
+            <form class="layui-form" action="<?=site_url('vlist/del')?>" method="post">
+                <table class="layui-table">
+                    <colgroup>
+                        <col width="40">
+                        <col width="100">
+                        <col>
+                        <col width="160">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>选</th>
+                            <th>ID</th>
+                            <th>名称</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php
+                        if(empty($vlist)) echo '<tr><td align="center" height="50" colspan="4">没有找到相关记录</td></tr>';
+                        foreach ($vlist as $row) {
+                            echo '
+                            <tr id="row_'.$row->id.'">
+                            <td><input name="id['.$row->id.']" lay-ignore class="xuan" type="checkbox" value="'.$row->id.'" /></td>
+                            <td>'.$row->id.'</td>
+                            <td style="text-align: left;">'.$row->name.'</td>
+                            <td class="basedb-more">
+                                <a class="layui-btn layui-btn-mini layui-btn-normal" href="javascript:get_open(\''.site_url('vlist/edit/'.$row->id).'\',\'修改\',\'70%\',\'280px\');">修改</a>
+								<a class="layui-btn layui-btn-mini layui-btn-danger" href="javascript:del_one(\''.site_url('vlist/del').'\','.$row->id.');">删除</a></td>
+                            </tr> ';
+                        }
+                    ?>
+                    </tbody>
+                </table>
+                <div class="more_func">
+                    <a class="layui-btn layui-btn-primary layui-btn-small" href="javascript:select_all();"><i class="fa fa-check colorl" ></i>全选/反选</a>
+                    <a class="layui-btn layui-btn-primary layui-btn-small" lay-submit lay-filter="del_pl"><i class="fa fa-close " style="color: red" ></i>删除选中</a>
+                </div>
+            </form>
+            <div id="page">
+                <div class="data_nums phide"><?=$page_data?></div>
+                <div class="data_page"><?=$page_list?></div>
+            </div>
+        </div>
+		<script src="<?=Web_Path?>packs/public/js/common.js?v=1.4"></script>
+	</body>
+</html>

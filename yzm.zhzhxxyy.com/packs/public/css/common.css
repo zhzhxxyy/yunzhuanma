@@ -1,0 +1,42 @@
+html,body{font-size: 14px;background-color: #fbfbfb;}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-button:vertical{display:none}
+::-webkit-scrollbar-corner,::-webkit-scrollbar-track{background-color:#e2e2e2}
+::-webkit-scrollbar-thumb{border-radius:0;background-color:rgba(0,0,0,.3)}
+::-webkit-scrollbar-thumb:vertical:hover{background-color:rgba(0,0,0,.35)}
+::-webkit-scrollbar-thumb:vertical:active{background-color:rgba(0,0,0,.38)}
+/*layui*/
+.layui-nav-tree .layui-nav-bar{background: #ff5722;width: 3px}
+.layui-nav .layui-this:after, .layui-nav-bar, .layui-nav-tree .layui-nav-itemed:after{background: #ff5722;width: 3px}
+.layui-nav-tree .layui-nav-child dd.layui-this, .layui-nav-tree .layui-nav-child dd.layui-this a, .layui-nav-tree .layui-this, .layui-nav-tree .layui-this>a, .layui-nav-tree .layui-this>a:hover{background-color: #ff5722}
+
+.layui-tab-brief>.layui-tab-title .layui-this{color: #ff5722}
+.layui-tab-brief>.layui-tab-more li.layui-this:after, .layui-tab-brief>.layui-tab-title .layui-this:after{border-color: #ff5722}
+.layui-form-radio i:hover, .layui-form-radioed i{color: #ff5722}
+
+header{width: 100%;height: 60px;position: fixed;left: 0;top: 0;background: #282b33;border-bottom: 3px solid #ff5722}
+header .logo{width: 160px;margin: 0px 20px;height: 60px;background: url(../images/logo.png) no-repeat;display: inline-block;float: left;}
+header span{line-height: 63px;display: inline-block;font-size: 21px;color: #fff;float: left;}
+.menu_left{width: 200px;height: 100%;position: fixed;top: 63px;background: #282b33}
+.main{position: absolute;width: auto;top: 63px;bottom: 0px;left: 200px;right: 0px;overflow: hidden;overflow-y: auto;}
+
+.setting{padding: 15px;}
+.setting .layui-form-item .layui-input-inline{min-width: 360px}
+.setting .layui-tab-content{padding-top: 20px;}
+.layui-btn2{background-color:#ff5722;}
+.setting .layui-btn-primary:hover{border-color: #ff5722}
+
+/*form-so*/
+.layui-form-so{text-align: center;}
+.layui-form-so .layui-form-label{width: auto;padding-right: 8px;display: inline;float: none;}
+.layui-form-so .layui-input-inline{float: none;width: auto;}
+.layui-form-so .layui-input-inline input{width: 100px;height: 30px;line-height: 30px;}
+.layui-form-so .layui-btn{height: 30px;line-height: 30px;}
+
+.colorl{color: #009688}
+
+#page{display: block;line-height: 35px;padding-top: 10px;margin-bottom: 40px;}
+.data_nums{float: left;width: 250px;margin-left: 10px;color: #333;}
+.data_page{float: right;margin-right: 10px;}
+.layui-laypage{margin: 0px;}
+#goto_page{height: 27px;}

@@ -1,0 +1,12 @@
+body{overflow-x:hidden;}
+.bg{position: absolute;width: 100%;left: 0;top: 0;bottom: 0;right: 0;z-index: 1;}
+.logkuang{position: absolute;width: 960px;height: 367px;left: 50%;top: 50px;margin-left: -480px;z-index: 1;}
+.layui-form-label{width: 100px;}
+@media screen and (max-width: 660px) { 
+    .logkuang{
+        width: 80%;
+        height: 340px;
+        margin-left: -40%;
+        margin-top: -170px;
+    }
+} 
